@@ -4,87 +4,95 @@ const ctx = canvas.getContext("2d");
 const scoreDisplay = document.getElementById("score");
 const tokensDisplay = document.getElementById("tokens");
 
-const leftBtn = document.getElementById("leftBtn");
-const rightBtn = document.getElementById("rightBtn");
-
-// የጌም ተለዋዋጮች (Game Variables)
+// የጌም ተለዋዋጮች
 let score = 0;
 let tokens = 0.00;
 let isGameOver = false;
 
-// የተጫዋች መኪና (Player Car)
+// መንገዱን በ 3 መስመሮች (Lanes) እንከፍለዋለን
+const lanes = [60, 160, 260]; // የግራ፣ መሃል እና የቀኝ መስመር X መቁረጫዎች
+let currentLaneIndex = 1; // መኪናው መጀመሪያ መሃል ላይ ይቆማል
+
 let car = {
-    x: canvas.width / 2 - 20,
+    x: lanes[currentLaneIndex],
     y: canvas.height - 90,
     width: 40,
     height: 70,
-    speed: 5,
     color: "#00ffcc"
 };
 
-// የመንገድ ላይ እንቅፋቶች ወይም ሌሎች መኪናዎች (Obstacles)
 let obstacles = [];
 let obstacleTimer = 0;
-
-// የቶከን/ኮይን ዝርዝር (Tokens to collect)
 let coinList = [];
 
-// ቁልፎችን ሲጫኑ የሚፈጠር እንቅስቃሴ
-let movingLeft = false;
-let movingRight = false;
+// የ Swipe እንቅስቃሴን መለየት
+let touchStartX = 0;
+let touchEndX = 0;
 
-leftBtn.addEventListener("touchstart", () => movingLeft = true);
-leftBtn.addEventListener("touchend", () => movingLeft = false);
-rightBtn.addEventListener("touchstart", () => movingRight = true);
-rightBtn.addEventListener("touchend", () => movingRight = false);
+canvas.addEventListener("touchstart", (e) => {
+    touchStartX = e.touches[0].clientX;
+});
 
-// ለኮምፒዩተር ወይም ማሻሻያ ያህል የኪቦርድ ቁልፎችም (Arrow keys)
+canvas.addEventListener("touchend", (e) => {
+    touchEndX = e.changedTouches[0].clientX;
+    handleSwipe();
+});
+
+function handleSwipe() {
+    let diffX = touchEndX - touchStartX;
+
+    if (Math.abs(diffX) > 30) { // አነስተኛ የርቀት ገደብ
+        if (diffX > 0) {
+            // ወደ ቀኝ ስዋይፕ
+            if (currentLaneIndex < lanes.length - 1) {
+                currentLaneIndex++;
+            }
+        } else {
+            // ወደ ግራ ስዋይፕ
+            if (currentLaneIndex > 0) {
+                currentLaneIndex--;
+            }
+        }
+        car.x = lanes[currentLaneIndex]; // መኪናውን ወዲያው ወደ አዲሱ መስመር ማዘዋወር
+    }
+}
+
+// ለኮምፒዩተር የኪቦርድ አማራጭ ( ቀስት ቁልፎች)
 window.addEventListener("keydown", (e) => {
-    if (e.key === "ArrowLeft") movingLeft = true;
-    if (e.key === "ArrowRight") movingRight = true;
-});
-window.addEventListener("keyup", (e) => {
-    if (e.key === "ArrowLeft") movingLeft = false;
-    if (e.key === "ArrowRight") movingRight = false;
+    if (e.key === "ArrowLeft" && currentLaneIndex > 0) {
+        currentLaneIndex--;
+        car.x = lanes[currentLaneIndex];
+    }
+    if (e.key === "ArrowRight" && currentLaneIndex < lanes.length - 1) {
+        currentLaneIndex++;
+        car.x = lanes[currentLaneIndex];
+    }
 });
 
-// እንቅፋቶችን እና ኮይኖችን መፍጠር
 function spawnItems() {
     obstacleTimer++;
-    if (obstacleTimer > 60) { // በየጊዜው ይታያሉ
+    if (obstacleTimer > 50) {
         obstacleTimer = 0;
         
-        // እንቅፋት መኪና
-        let obsX = Math.random() * (canvas.width - 40);
-        obstacles.push({ x: obsX, y: -80, width: 40, height: 70, speed: 4 });
+        // እንቅፋት በዘፈቀደ ከ 3ቱ መስመሮች በአንዱ ላይ ይወጣል
+        let randomLane = lanes[Math.floor(Math.random() * lanes.length)];
+        obstacles.push({ x: randomLane, y: -80, width: 40, height: 70, speed: 4 });
 
-        // የብርሃን 🪙 ቶከን
         if (Math.random() > 0.4) {
-            let coinX = Math.random() * (canvas.width - 25);
-            coinList.push({ x: coinX, y: -40, radius: 12, speed: 4 });
+            let coinLane = lanes[Math.floor(Math.random() * lanes.length)];
+            coinList.push({ x: coinLane + 10, y: -40, radius: 12, speed: 4 });
         }
     }
 }
 
-// ጌሙን ማዘመን (Update Game Logic)
 function update() {
     if (isGameOver) return;
 
-    // የመኪና እንቅስቃሴ መቆጣጠር
-    if (movingLeft && car.x > 0) {
-        car.x -= car.speed;
-    }
-    if (movingRight && car.x < canvas.width - car.width) {
-        car.x += car.speed;
-    }
-
     spawnItems();
 
-    // እንቅፋቶችን ማያንቀሳቀስ
     for (let i = obstacles.length - 1; i >= 0; i--) {
         obstacles[i].y += obstacles[i].speed;
 
-        // ከ ተጫዋች መኪና ጋር መጋጨቱን ማረጋገጥ (Collision Detection)
         if (
             car.x < obstacles[i].x + obstacles[i].width &&
             car.x + car.width > obstacles[i].x &&
@@ -96,7 +104,6 @@ function update() {
             location.reload();
         }
 
-        // ከስክሪኑ ውጭ ከወጡ ማስወገድ
         if (obstacles[i].y > canvas.height) {
             obstacles.splice(i, 1);
             score += 10;
@@ -104,17 +111,15 @@ function update() {
         }
     }
 
-    // 🪙 ቶከኖችን ማያንቀሳቀስ እና መሰብሰብ
     for (let i = coinList.length - 1; i >= 0; i--) {
         coinList[i].y += coinList[i].speed;
 
-        // መኪናው ኮይኑን ሲነካው
         let distanceX = (car.x + car.width / 2) - coinList[i].x;
         let distanceY = (car.y + car.height / 2) - coinList[i].y;
         let distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
 
         if (distance < car.width / 2 + coinList[i].radius) {
-            tokens += 0.50; // የብርሃን ቶከን ይጨምራል (PlayToEarn aspect)
+            tokens += 0.50;
             tokensDisplay.innerText = tokens.toFixed(2);
             coinList.splice(i, 1);
         } else if (coinList[i].y > canvas.height) {
@@ -123,36 +128,34 @@ function update() {
     }
 }
 
-// ምስሎችን በካንቫስ ላይ መሳል (Render Graphics)
 function draw() {
-    // ማስተካከያ ዳራ (Background Road)
     ctx.fillStyle = "#2c3e50";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // የመንገድ መሃል መስመሮች (Road dashed lines)
+    // የመንገድ መስመሮች (3  lanes እንዲታዩ 2 መስመሮች እናስገባለን)
     ctx.strokeStyle = "#fff";
     ctx.setLineDash([20, 20]);
-    ctx.lineWidth = 4;
+    ctx.lineWidth = 3;
+    
     ctx.beginPath();
-    ctx.moveTo(canvas.width / 2, 0);
-    ctx.lineTo(canvas.width / 2, canvas.height);
+    ctx.moveTo(120, 0); ctx.lineTo(120, canvas.height);
+    ctx.moveTo(240, 0); ctx.lineTo(240, canvas.height);
     ctx.stroke();
     ctx.setLineDash([]);
 
-    // የተጫዋቹን መኪና መሳል (BirhanCar)
+    // የተጫዋች መኪና
     ctx.fillStyle = car.color;
     ctx.fillRect(car.x, car.y, car.width, car.height);
-    // የመኪና መስኮቶች ማስጌጫ
     ctx.fillStyle = "#111";
     ctx.fillRect(car.x + 5, car.y + 15, car.width - 10, 15);
 
-    // እንቅፋት መኪናዎችን መሳል
+    // እንቅፋቶች
     ctx.fillStyle = "#e74c3c";
     for (let obs of obstacles) {
         ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
     }
 
-    // 🪙 ቶከኖችን (Coins) መሳል
+    // 🪙 ቶከኖች
     ctx.fillStyle = "#f1c40f";
     for (let coin of coinList) {
         ctx.beginPath();
@@ -163,7 +166,6 @@ function draw() {
     }
 }
 
-// የጌም ሎፕ (Game Loop)
 function loop() {
     update();
     draw();
@@ -172,5 +174,4 @@ function loop() {
     }
 }
 
-// ጌሙን ማስጀመር
 loop();

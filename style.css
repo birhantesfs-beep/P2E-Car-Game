@@ -33,7 +33,7 @@ body {
     width: 100%;
     font-size: 18px;
     font-weight: bold;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
     color: #ffd700;
 }
 
@@ -47,27 +47,4 @@ body {
 canvas {
     display: block;
     background: #333;
-}
-
-.controls {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    margin-top: 15px;
-}
-
-.controls button {
-    width: 45%;
-    padding: 15px;
-    font-size: 20px;
-    font-weight: bold;
-    background-color: #00ffcc;
-    border: none;
-    border-radius: 8px;
-    color: #121212;
-    cursor: pointer;
-}
-
-.controls button:active {
-    background-color: #00b386;
 }
