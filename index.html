@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BirhanCar: PlayToEarn</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <!-- የ σκοር እና ቶከን ማሳያ -->
+        <header class="game-header">
+            <div class="score-board">ነጥብ: <span id="score">0</span></div>
+            <div class="token-board">ብርሃን 🪙: <span id="tokens">0.00</span></div>
+        </header>
+
+        <!-- የጌሙ ማጫወቻ ቦርድ (ካንቫስ) -->
+        <div class="canvas-box">
+            <canvas id="gameCanvas" width="360" height="500"></canvas>
+        </div>
+
+        <!-- መቆጣጠሪያ ቁልፎች (ለስልክ ንክኪ አመቺ እንዲሆን) -->
+        <div class="controls">
+            <button id="leftBtn">◀ ⬅️</button>
+            <button id="rightBtn">➡ ▶</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
