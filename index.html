@@ -1,25 +1,707 @@
-<!DOCTYPE html>
-<html lang="am">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BirhanCar: PlayToEarn</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <div class="game-container">
-        <!-- የ σκοር እና ቶከን ማሳያ -->
-        <header class="game-header">
-            <div class="score-board">ነጥብ: <span id="score">0</span></div>
-            <div class="token-board">ብርሃን 🪙: <span id="tokens">0.00</span></div>
-        </header>
+<!DOCTYPE html>    <html lang="en">    
+<head>    
+    <meta charset="UTF-8">    <meta    
+    name="viewport"    
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"    
+>    
 
-        <!-- የጌሙ ማጫወቻ ቦርድ (ካንቫስ) -->
-        <div class="canvas-box">
-            <canvas id="gameCanvas" width="360" height="500"></canvas>
-        </div>
-    </div>
+<title>P2E Car Game</title>    
 
-    <script src="script.js"></script>
-</body>
+<link rel="stylesheet" href="style.css">
+
+</head>    <body>    <div id="app">    <!-- =========================    
+     LOADING SCREEN    
+========================== -->    
+<section id="loadingScreen" class="screen loading-screen">    
+
+    <div class="loading-area">    
+
+        <div class="loading-text">    
+            LOADING...    
+        </div>    
+
+        <div class="loading-bar">    
+            <div id="loadingProgress"></div>    
+        </div>    
+
+        <div id="loadingPercent" class="loading-percent">    
+            0%    
+        </div>    
+
+    </div>    
+
+</section>    
+
+
+<!-- =========================    
+     LOGIN / SIGN UP CHOICE    
+========================== -->    
+<section    
+    id="authChoiceScreen"    
+    class="screen auth-choice hidden"    
+>    
+
+    <div class="auth-buttons">    
+
+        <button    
+            id="loginButton"    
+            class="main-auth-btn login-btn"    
+            type="button"    
+        >    
+            <span class="button-icon">👤</span>    
+            <span>LOGIN</span>    
+        </button>    
+
+
+        <button    
+            id="signupButton"    
+            class="main-auth-btn signup-btn"    
+            type="button"    
+        >    
+            <span class="button-icon">👤+</span>    
+            <span>SIGN UP</span>    
+        </button>    
+
+
+        <button    
+            id="guestButton"    
+            class="guest-btn"    
+            type="button"    
+        >    
+            CONTINUE AS GUEST    
+            <span>›</span>    
+        </button>    
+
+    </div>    
+
+</section>    
+
+
+<!-- =========================    
+     SIGN UP    
+========================== -->    
+<section    
+    id="signupScreen"    
+    class="screen form-screen hidden"    
+>    
+
+    <div class="form-box">    
+
+        <h2>P2E Car Game User Account Registration</h2>    
+
+        <p>Join the fast lane!</p>    
+
+        <form id="signupForm">    
+
+            <div class="name-row">    
+
+                <div class="input-box">    
+
+                    <span>👤</span>    
+
+                    <input    
+                        type="text"    
+                        id="firstName"    
+                        placeholder="First Name"    
+                        required    
+                    >    
+
+                </div>    
+
+
+                <div class="input-box">    
+
+                    <input    
+                        type="text"    
+                        id="lastName"    
+                        placeholder="Last Name"    
+                        required    
+                    >    
+
+                </div>    
+
+            </div>    
+
+
+            <div class="input-box">    
+
+                <span>✉</span>    
+
+                <input    
+                    type="email"    
+                    id="signupEmail"    
+                    placeholder="Email Address"    
+                    required    
+                >    
+
+            </div>    
+
+
+            <div class="input-box">    
+
+                <span>🔒</span>    
+
+                <input    
+                    type="password"    
+                    id="signupPassword"    
+                    placeholder="Password"    
+                    required    
+                >    
+
+            </div>    
+
+
+            <div class="input-box">    
+
+                <span>🔗</span>    
+
+                <input    
+                    type="password"    
+                    id="confirmPassword"    
+                    placeholder="Confirm Password"    
+                    required    
+                >    
+
+            </div>    
+
+
+            <div class="input-box">    
+
+                <span>🎁</span>    
+
+                <input    
+                    type="text"    
+                    id="referralCode"    
+                    placeholder="Referral Code (Optional)"    
+                >    
+
+            </div>    
+
+
+            <button    
+                type="submit"    
+                class="form-submit"    
+            >    
+                SIGN UP    
+            </button>    
+
+        </form>    
+
+
+        <button    
+            id="goLogin"    
+            class="switch-form"    
+            type="button"    
+        >    
+            Already have an account? <b>Log In</b>    
+        </button>    
+
+    </div>    
+
+</section>    
+
+
+<!-- =========================    
+     LOGIN    
+========================== -->    
+<section    
+    id="loginScreen"    
+    class="screen form-screen hidden"    
+>    
+
+    <div class="form-box login-form-box">    
+
+        <h2>P2E Car Game User Log In</h2>    
+
+        <p>Access your dashboard</p>    
+
+        <form id="loginForm">    
+
+            <div class="input-box">    
+
+                <span>✉</span>    
+
+                <input    
+                    type="email"    
+                    id="loginEmail"    
+                    placeholder="Email Address"    
+                    required    
+                >    
+
+            </div>    
+
+
+            <div class="input-box">    
+
+                <span>🔒</span>    
+
+                <input    
+                    type="password"    
+                    id="loginPassword"    
+                    placeholder="Password"    
+                    required    
+                >    
+
+            </div>    
+
+
+            <div class="login-options">    
+
+                <label>    
+
+                    <input    
+                        type="checkbox"    
+                        id="rememberMe"    
+                    >    
+
+                    <span>Remember Me</span>    
+
+                </label>    
+
+
+                <button    
+                    type="button"    
+                    id="forgotPassword"    
+                >    
+                    Forgot Password?    
+                </button>    
+
+            </div>    
+
+
+            <button    
+                type="submit"    
+                class="form-submit"    
+            >    
+                LOG IN    
+            </button>    
+
+        </form>    
+
+
+        <button    
+            id="goSignup"    
+            class="switch-form"    
+            type="button"    
+        >    
+            Don't have an account? <b>Sign Up</b>    
+        </button>    
+
+    </div>    
+
+</section>    
+
+
+<!-- =========================    
+     EMAIL VERIFICATION    
+========================== -->    
+<section    
+    id="verificationScreen"    
+    class="screen verification-screen hidden"    
+>    
+
+    <div class="verification-box">    
+
+        <div class="verification-icon">    
+            ✉️    
+        </div>    
+
+
+        <h2>    
+            Email Verification    
+        </h2>    
+
+
+        <p>    
+            Enter the 6-digit verification code    
+        </p>    
+
+
+        <p class="verification-email">    
+
+            Code sent to:    
+
+            <strong id="verificationEmail">    
+                your email    
+            </strong>    
+
+        </p>    
+
+
+        <!-- DEMO CODE -->    
+        <div    
+            id="demoCodeBox"    
+            class="demo-code-box"    
+        >    
+
+            <span>    
+                Verification Code    
+            </span>    
+
+            <strong id="demoCode">    
+                000000    
+            </strong>    
+
+        </div>    
+
+
+        <!-- CODE INPUTS -->    
+        <div class="code-inputs">    
+
+            <input    
+                type="text"    
+                maxlength="1"    
+                inputmode="numeric"    
+                autocomplete="one-time-code"    
+                aria-label="Verification digit 1"    
+            >    
+
+            <input    
+                type="text"    
+                maxlength="1"    
+                inputmode="numeric"    
+                aria-label="Verification digit 2"    
+            >    
+
+            <input    
+                type="text"    
+                maxlength="1"    
+                inputmode="numeric"    
+                aria-label="Verification digit 3"    
+            >    
+
+            <input    
+                type="text"    
+                maxlength="1"    
+                inputmode="numeric"    
+                aria-label="Verification digit 4"    
+            >    
+
+            <input    
+                type="text"    
+                maxlength="1"    
+                inputmode="numeric"    
+                aria-label="Verification digit 5"    
+            >    
+
+            <input    
+                type="text"    
+                maxlength="1"    
+                inputmode="numeric"    
+                aria-label="Verification digit 6"    
+            >    
+
+        </div>    
+
+
+        <button    
+            id="verifyButton"    
+            class="verify-btn"    
+            type="button"    
+        >    
+            VERIFY    
+        </button>    
+
+
+        <button    
+            id="resendCode"    
+            class="resend-btn"    
+            type="button"    
+        >    
+            Resend Code    
+        </button>    
+
+
+        <button    
+            id="backToAuth"    
+            class="back-btn"    
+            type="button"    
+        >    
+            Back    
+        </button>    
+
+
+        <div    
+            id="verificationMessage"    
+            class="verification-message"    
+            aria-live="polite"    
+        ></div>    
+
+    </div>    
+
+</section>    
+
+
+<!-- =========================    
+     HOME SCREEN    
+========================== -->    
+<section    
+    id="homeScreen"    
+    class="screen home-screen hidden"    
+>    
+
+    <!-- TOP BAR -->    
+    <div class="home-top">    
+
+        <button    
+            id="carProfileButton"    
+            class="car-profile"    
+            type="button"    
+        >    
+
+            <img    
+                src="assets/home-car.jpg"    
+                alt="Car"    
+            >    
+
+        </button>    
+
+
+        <button    
+            id="cashWallet"    
+            class="wallet cash-wallet"    
+            type="button"    
+        >    
+
+            <span class="wallet-icon">💵</span>    
+
+            <span class="wallet-value">    
+                $<span id="cashValue">0.00</span>    
+            </span>    
+
+            <span class="wallet-action">💼</span>    
+
+        </button>    
+
+
+        <button    
+            id="coinWallet"    
+            class="wallet coin-wallet"    
+            type="button"    
+        >    
+
+            <span class="wallet-icon">🪙</span>    
+
+            <span class="wallet-value">    
+                <span id="coinValue">0.00</span>    
+            </span>    
+
+            <span class="wallet-action">💼</span>    
+
+        </button>    
+
+
+        <div class="energy-box">    
+
+            <span class="energy-icon">🔋</span>    
+
+            <span id="energyValue">    
+                20/20    
+            </span>    
+
+        </div>    
+
+
+        <button    
+            id="inboxButton"    
+            class="inbox-button"    
+            type="button"    
+        >    
+
+            ✉️    
+
+            <span    
+                id="inboxBadge"    
+                class="inbox-badge"    
+            >    
+                1    
+            </span>    
+
+        </button>    
+
+    </div>    
+
+
+    <!-- LEVEL -->    
+    <div class="level-area">    
+
+        <h1>    
+            Level <span id="levelValue">1</span>    
+        </h1>    
+
+    </div>    
+
+
+    <!-- SKIN -->    
+    <button    
+        id="skinButton"    
+        class="skin-button"    
+        type="button"    
+    >    
+
+        <div class="skin-image">    
+
+            <img    
+                src="assets/home-car.jpg"    
+                alt="Skin"    
+            >    
+
+        </div>    
+
+        <span>Skin</span>    
+
+    </button>    
+
+
+    <!-- GAME -->    
+    <div    
+        id="gameArea"    
+        class="game-area"    
+    >    
+
+        <div    
+            id="gameCar"    
+            class="game-car"    
+        >    
+
+            <img    
+                src="assets/home-car.jpg"    
+                alt="Player Car"    
+            >    
+
+        </div>    
+
+
+        <div    
+            id="gameMessage"    
+            class="game-message hidden"    
+        >    
+            GET READY!    
+        </div>    
+
+    </div>    
+
+
+    <!-- START GAME -->    
+    <button    
+        id="startGameButton"    
+        class="start-game-button"    
+        type="button"    
+    >    
+
+        <span class="start-title">    
+            Start game    
+        </span>    
+
+        <span class="start-energy">    
+            🔋 <span id="startEnergyCost">-1</span>    
+        </span>    
+
+    </button>    
+
+
+    <!-- BOTTOM ACTIONS -->    
+    <div class="home-actions">    
+
+        <button    
+            id="grandPrizeButton"    
+            class="action-card"    
+            type="button"    
+        >    
+
+            <div class="action-icon">    
+                🎁    
+            </div>    
+
+            <div class="action-title">    
+                Grand Prize    
+            </div>    
+
+        </button>    
+
+
+        <button    
+            id="missionButton"    
+            class="action-card"    
+            type="button"    
+        >    
+
+            <div class="action-icon">    
+                🚗    
+            </div>    
+
+            <div class="action-title">    
+                Mission    
+            </div>    
+
+        </button>    
+
+
+        <button    
+            id="inviteButton"    
+            class="action-card"    
+            type="button"    
+        >    
+
+            <div class="action-icon">    
+                🏆    
+            </div>    
+
+            <div class="action-title">    
+                Invite    
+            </div>    
+
+        </button>    
+
+
+        <button    
+            id="profileButton"    
+            class="action-card"    
+            type="button"    
+        >    
+
+            <div class="action-icon">    
+                👤    
+            </div>    
+
+            <div class="action-title">    
+                Profile    
+            </div>    
+
+        </button>    
+
+    </div>    
+
+
+    <!-- MODAL -->    
+    <div    
+        id="homeModal"    
+        class="home-modal hidden"    
+    >    
+
+        <div class="modal-box">    
+
+            <button    
+                id="closeModal"    
+                class="close-modal"    
+                type="button"    
+            >    
+                ×    
+            </button>    
+
+            <h2 id="modalTitle">    
+                P2E Car Game    
+            </h2>    
+
+            <p id="modalText">    
+                Welcome!    
+            </p>    
+
+        </div>    
+
+    </div>    
+
+</section>
+
+</div>    <script src="script.js"></script>    </body>    
 </html>

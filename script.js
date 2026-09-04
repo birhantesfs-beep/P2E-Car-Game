@@ -1,177 +1,979 @@
-const canvas = document.getElementById("gameCanvas");
-const ctx = canvas.getContext("2d");
+document.addEventListener("DOMContentLoaded", () => {
 
-const scoreDisplay = document.getElementById("score");
-const tokensDisplay = document.getElementById("tokens");
+    /* =====================================================
+       SCREENS
+    ===================================================== */
 
-// የጌም ተለዋዋጮች
-let score = 0;
-let tokens = 0.00;
-let isGameOver = false;
+    const loadingScreen = document.getElementById("loadingScreen");
+    const authChoiceScreen = document.getElementById("authChoiceScreen");
+    const signupScreen = document.getElementById("signupScreen");
+    const loginScreen = document.getElementById("loginScreen");
+    const verificationScreen = document.getElementById("verificationScreen");
+    const homeScreen = document.getElementById("homeScreen");
 
-// መንገዱን በ 3 መስመሮች (Lanes) እንከፍለዋለን
-const lanes = [60, 160, 260]; // የግራ፣ መሃል እና የቀኝ መስመር X መቁረጫዎች
-let currentLaneIndex = 1; // መኪናው መጀመሪያ መሃል ላይ ይቆማል
 
-let car = {
-    x: lanes[currentLaneIndex],
-    y: canvas.height - 90,
-    width: 40,
-    height: 70,
-    color: "#00ffcc"
-};
+    /* =====================================================
+       LOADING
+    ===================================================== */
 
-let obstacles = [];
-let obstacleTimer = 0;
-let coinList = [];
+    const loadingProgress =
+        document.getElementById("loadingProgress");
 
-// የ Swipe እንቅስቃሴን መለየት
-let touchStartX = 0;
-let touchEndX = 0;
+    const loadingPercent =
+        document.getElementById("loadingPercent");
 
-canvas.addEventListener("touchstart", (e) => {
-    touchStartX = e.touches[0].clientX;
-});
+    let loadingValue = 0;
 
-canvas.addEventListener("touchend", (e) => {
-    touchEndX = e.changedTouches[0].clientX;
-    handleSwipe();
-});
+    const loadingTimer = setInterval(() => {
 
-function handleSwipe() {
-    let diffX = touchEndX - touchStartX;
+        loadingValue += 2;
 
-    if (Math.abs(diffX) > 30) { // አነስተኛ የርቀት ገደብ
-        if (diffX > 0) {
-            // ወደ ቀኝ ስዋይፕ
-            if (currentLaneIndex < lanes.length - 1) {
-                currentLaneIndex++;
+        if (loadingValue > 100) {
+            loadingValue = 100;
+        }
+
+        loadingProgress.style.width =
+            loadingValue + "%";
+
+        loadingPercent.textContent =
+            loadingValue + "%";
+
+        if (loadingValue >= 100) {
+
+            clearInterval(loadingTimer);
+
+            setTimeout(() => {
+
+                hideAllScreens();
+
+                authChoiceScreen.classList.remove("hidden");
+
+            }, 400);
+        }
+
+    }, 40);
+
+
+    /* =====================================================
+       SCREEN HELPERS
+    ===================================================== */
+
+    function hideAllScreens() {
+
+        loadingScreen.classList.add("hidden");
+        authChoiceScreen.classList.add("hidden");
+        signupScreen.classList.add("hidden");
+        loginScreen.classList.add("hidden");
+        verificationScreen.classList.add("hidden");
+        homeScreen.classList.add("hidden");
+
+    }
+
+
+    function showScreen(screen) {
+
+        hideAllScreens();
+
+        screen.classList.remove("hidden");
+
+    }
+
+
+    /* =====================================================
+       AUTH BUTTONS
+    ===================================================== */
+
+    document
+        .getElementById("loginButton")
+        .addEventListener("click", () => {
+
+            showScreen(loginScreen);
+
+        });
+
+
+    document
+        .getElementById("signupButton")
+        .addEventListener("click", () => {
+
+            showScreen(signupScreen);
+
+        });
+
+
+    document
+        .getElementById("guestButton")
+        .addEventListener("click", () => {
+
+            showScreen(homeScreen);
+
+            updateHomeUI();
+
+        });
+
+
+    document
+        .getElementById("goLogin")
+        .addEventListener("click", () => {
+
+            showScreen(loginScreen);
+
+        });
+
+
+    document
+        .getElementById("goSignup")
+        .addEventListener("click", () => {
+
+            showScreen(signupScreen);
+
+        });
+
+
+    /* =====================================================
+       VERIFICATION VARIABLES
+    ===================================================== */
+
+    let verificationCode = "";
+    let userEmail = "";
+    let verificationPurpose = "";
+    let returnScreen = null;
+
+
+    /* =====================================================
+       GENERATE VERIFICATION CODE
+    ===================================================== */
+
+    function generateVerificationCode() {
+
+        return Math.floor(
+            100000 + Math.random() * 900000
+        ).toString();
+
+    }
+
+
+    /* =====================================================
+       SHOW VERIFICATION
+    ===================================================== */
+
+    function showVerification(
+        email,
+        purpose,
+        previousScreen
+    ) {
+
+        userEmail = email;
+        verificationPurpose = purpose;
+        returnScreen = previousScreen;
+
+        verificationCode =
+            generateVerificationCode();
+
+        document.getElementById(
+            "verificationEmail"
+        ).textContent = email;
+
+        document.getElementById(
+            "demoCode"
+        ).textContent = verificationCode;
+
+        document.getElementById(
+            "verificationMessage"
+        ).textContent = "";
+
+        document
+            .querySelectorAll(".code-inputs input")
+            .forEach(input => {
+                input.value = "";
+            });
+
+        showScreen(verificationScreen);
+
+        console.log(
+            "Demo verification code:",
+            verificationCode
+        );
+
+        setTimeout(() => {
+
+            const firstInput =
+                document.querySelector(
+                    ".code-inputs input"
+                );
+
+            if (firstInput) {
+                firstInput.focus();
             }
-        } else {
-            // ወደ ግራ ስዋይፕ
-            if (currentLaneIndex > 0) {
-                currentLaneIndex--;
+
+        }, 100);
+
+    }
+
+
+    /* =====================================================
+       SIGNUP
+    ===================================================== */
+
+    document
+        .getElementById("signupForm")
+        .addEventListener("submit", (event) => {
+
+            event.preventDefault();
+
+            const firstName =
+                document.getElementById("firstName").value.trim();
+
+            const lastName =
+                document.getElementById("lastName").value.trim();
+
+            const email =
+                document.getElementById("signupEmail").value.trim();
+
+            const password =
+                document.getElementById("signupPassword").value;
+
+            const confirmPassword =
+                document.getElementById("confirmPassword").value;
+
+
+            if (!firstName || !lastName) {
+
+                alert("Please enter your name.");
+
+                return;
             }
-        }
-        car.x = lanes[currentLaneIndex]; // መኪናውን ወዲያው ወደ አዲሱ መስመር ማዘዋወር
-    }
-}
 
-// ለኮምፒዩተር የኪቦርድ አማራጭ ( ቀስት ቁልፎች)
-window.addEventListener("keydown", (e) => {
-    if (e.key === "ArrowLeft" && currentLaneIndex > 0) {
-        currentLaneIndex--;
-        car.x = lanes[currentLaneIndex];
+
+            if (!email.includes("@")) {
+
+                alert("Please enter a valid email.");
+
+                return;
+            }
+
+
+            if (password.length < 6) {
+
+                alert(
+                    "Password must be at least 6 characters."
+                );
+
+                return;
+            }
+
+
+            if (password !== confirmPassword) {
+
+                alert("Passwords do not match.");
+
+                return;
+            }
+
+
+            showVerification(
+                email,
+                "signup",
+                signupScreen
+            );
+
+        });
+
+
+    /* =====================================================
+       LOGIN
+    ===================================================== */
+
+    document
+        .getElementById("loginForm")
+        .addEventListener("submit", (event) => {
+
+            event.preventDefault();
+
+            const email =
+                document.getElementById("loginEmail").value.trim();
+
+            const password =
+                document.getElementById("loginPassword").value;
+
+
+            if (!email.includes("@")) {
+
+                alert("Please enter a valid email.");
+
+                return;
+            }
+
+
+            if (!password) {
+
+                alert("Please enter your password.");
+
+                return;
+            }
+
+
+            showVerification(
+                email,
+                "login",
+                loginScreen
+            );
+
+        });
+
+
+    /* =====================================================
+       CODE INPUTS
+    ===================================================== */
+
+    const codeInputs =
+        document.querySelectorAll(
+            ".code-inputs input"
+        );
+
+
+    codeInputs.forEach((input, index) => {
+
+        input.addEventListener("input", () => {
+
+            input.value =
+                input.value.replace(/\D/g, "");
+
+            if (
+                input.value &&
+                index < codeInputs.length - 1
+            ) {
+
+                codeInputs[index + 1].focus();
+
+            }
+
+        });
+
+
+        input.addEventListener("keydown", (event) => {
+
+            if (
+                event.key === "Backspace" &&
+                !input.value &&
+                index > 0
+            ) {
+
+                codeInputs[index - 1].focus();
+
+            }
+
+
+            if (
+                event.key === "ArrowLeft" &&
+                index > 0
+            ) {
+
+                codeInputs[index - 1].focus();
+
+            }
+
+
+            if (
+                event.key === "ArrowRight" &&
+                index < codeInputs.length - 1
+            ) {
+
+                codeInputs[index + 1].focus();
+
+            }
+
+        });
+
+
+        input.addEventListener("paste", (event) => {
+
+            event.preventDefault();
+
+            const pasted =
+                event.clipboardData
+                    .getData("text")
+                    .replace(/\D/g, "")
+                    .slice(0, 6);
+
+
+            pasted.split("").forEach(
+                (number, pasteIndex) => {
+
+                    if (codeInputs[pasteIndex]) {
+
+                        codeInputs[pasteIndex].value =
+                            number;
+
+                    }
+
+                }
+            );
+
+
+            if (pasted.length === 6) {
+
+                codeInputs[5].focus();
+
+            }
+
+        });
+
+    });
+
+
+    /* =====================================================
+       VERIFY
+    ===================================================== */
+
+    document
+        .getElementById("verifyButton")
+        .addEventListener("click", () => {
+
+            const enteredCode =
+                Array.from(codeInputs)
+                    .map(input => input.value)
+                    .join("");
+
+
+            const message =
+                document.getElementById(
+                    "verificationMessage"
+                );
+
+
+            if (enteredCode.length !== 6) {
+
+                message.textContent =
+                    "Please enter all 6 digits.";
+
+                message.style.color = "red";
+
+                return;
+            }
+
+
+            if (enteredCode !== verificationCode) {
+
+                message.textContent =
+                    "Incorrect verification code.";
+
+                message.style.color = "red";
+
+                return;
+            }
+
+
+            message.textContent =
+                "Verification successful!";
+
+            message.style.color = "green";
+
+
+            setTimeout(() => {
+
+                if (
+                    verificationPurpose ===
+                    "forgot-password"
+                ) {
+
+                    showScreen(loginScreen);
+
+                    return;
+                }
+
+
+                showScreen(homeScreen);
+
+                updateHomeUI();
+
+            }, 700);
+
+        });
+
+
+    /* =====================================================
+       RESEND CODE
+    ===================================================== */
+
+    document
+        .getElementById("resendCode")
+        .addEventListener("click", () => {
+
+            verificationCode =
+                generateVerificationCode();
+
+            document.getElementById(
+                "demoCode"
+            ).textContent = verificationCode;
+
+            codeInputs.forEach(input => {
+                input.value = "";
+            });
+
+
+            document.getElementById(
+                "verificationMessage"
+            ).textContent =
+                "A new code has been generated.";
+
+            document.getElementById(
+                "verificationMessage"
+            ).style.color = "#0066cc";
+
+
+            console.log(
+                "New demo verification code:",
+                verificationCode
+            );
+
+
+            codeInputs[0].focus();
+
+        });
+
+
+    /* =====================================================
+       BACK FROM VERIFICATION
+    ===================================================== */
+
+    document
+        .getElementById("backToAuth")
+        .addEventListener("click", () => {
+
+            if (returnScreen) {
+
+                showScreen(returnScreen);
+
+            } else {
+
+                showScreen(authChoiceScreen);
+
+            }
+
+        });
+
+
+    /* =====================================================
+       FORGOT PASSWORD
+    ===================================================== */
+
+    document
+        .getElementById("forgotPassword")
+        .addEventListener("click", () => {
+
+            const email =
+                document.getElementById(
+                    "loginEmail"
+                ).value.trim();
+
+
+            if (!email) {
+
+                alert(
+                    "Please enter your email first."
+                );
+
+                return;
+            }
+
+
+            if (!email.includes("@")) {
+
+                alert(
+                    "Please enter a valid email."
+                );
+
+                return;
+            }
+
+
+            showVerification(
+                email,
+                "forgot-password",
+                loginScreen
+            );
+
+        });
+
+
+    /* =====================================================
+       HOME GAME STATE
+    ===================================================== */
+
+    let energy = 20;
+    const maxEnergy = 20;
+
+    let level = 1;
+    let cash = 0;
+    let coins = 0;
+
+
+    /* =====================================================
+       HOME UI
+    ===================================================== */
+
+    function updateHomeUI() {
+
+        document.getElementById(
+            "energyValue"
+        ).textContent =
+            `${energy}/${maxEnergy}`;
+
+
+        document.getElementById(
+            "levelValue"
+        ).textContent =
+            level;
+
+
+        document.getElementById(
+            "cashValue"
+        ).textContent =
+            `$${cash.toFixed(2)}`;
+
+
+        document.getElementById(
+            "coinValue"
+        ).textContent =
+            coins.toFixed(2);
+
+
+        document.getElementById(
+            "startEnergyCost"
+        ).textContent =
+            "1";
+
     }
-    if (e.key === "ArrowRight" && currentLaneIndex < lanes.length - 1) {
-        currentLaneIndex++;
-        car.x = lanes[currentLaneIndex];
+
+
+    /* =====================================================
+       START GAME
+    ===================================================== */
+
+    const startGameButton =
+        document.getElementById(
+            "startGameButton"
+        );
+
+    const gameCar =
+        document.getElementById("gameCar");
+
+    const gameMessage =
+        document.getElementById("gameMessage");
+
+
+    startGameButton.addEventListener(
+        "click",
+        () => {
+
+            if (energy <= 0) {
+
+                gameMessage.textContent =
+                    "NO ENERGY!";
+
+                setTimeout(() => {
+
+                    gameMessage.textContent = "";
+
+                }, 1500);
+
+                return;
+            }
+
+
+            /* Spend one energy */
+
+            energy--;
+
+            updateHomeUI();
+
+
+            /*
+                The car is now an independent overlay.
+                home-car.jpg remains ONLY the background.
+            */
+
+            gameCar.classList.remove("hidden");
+
+            gameCar.classList.add("running");
+
+
+            gameMessage.textContent =
+                "RACING...";
+
+
+            startGameButton.disabled = true;
+
+
+            /* =========================
+               RACE
+            ========================== */
+
+            setTimeout(() => {
+
+                gameCar.classList.remove(
+                    "running"
+                );
+
+
+                gameMessage.textContent =
+                    "LEVEL COMPLETE!";
+
+
+                /*
+                    Demo reward only.
+                    Later this must be handled
+                    by a secure backend.
+                */
+
+                coins += 0.10;
+
+                level++;
+
+
+                updateHomeUI();
+
+
+                setTimeout(() => {
+
+                    gameMessage.textContent = "";
+
+                    gameCar.classList.add("hidden");
+
+                    startGameButton.disabled =
+                        false;
+
+                }, 1000);
+
+            }, 2500);
+
+        }
+    );
+
+
+    /* =====================================================
+       MODAL
+    ===================================================== */
+
+    const homeModal =
+        document.getElementById("homeModal");
+
+    const closeModal =
+        document.getElementById("closeModal");
+
+    const modalTitle =
+        document.getElementById("modalTitle");
+
+    const modalText =
+        document.getElementById("modalText");
+
+
+    function openModal(title, text) {
+
+        modalTitle.textContent = title;
+        modalText.textContent = text;
+
+        homeModal.classList.remove("hidden");
+
     }
+
+
+    function closeHomeModal() {
+
+        homeModal.classList.add("hidden");
+
+    }
+
+
+    closeModal.addEventListener(
+        "click",
+        closeHomeModal
+    );
+
+
+    homeModal.addEventListener(
+        "click",
+        (event) => {
+
+            if (event.target === homeModal) {
+
+                closeHomeModal();
+
+            }
+
+        }
+    );
+
+
+    /* =====================================================
+       WALLET
+    ===================================================== */
+
+    document
+        .getElementById("cashWallet")
+        .addEventListener("click", () => {
+
+            openModal(
+                "Cash Wallet",
+                `Your cash balance is $${cash.toFixed(2)}.`
+            );
+
+        });
+
+
+    document
+        .getElementById("coinWallet")
+        .addEventListener("click", () => {
+
+            openModal(
+                "Coin Wallet",
+                `Your coin balance is ${coins.toFixed(2)}.`
+            );
+
+        });
+
+
+    document
+        .getElementById("cashActionButton")
+        .addEventListener("click", () => {
+
+            openModal(
+                "Cash Wallet",
+                "Cash wallet actions will be added later."
+            );
+
+        });
+
+
+    document
+        .getElementById("coinActionButton")
+        .addEventListener("click", () => {
+
+            openModal(
+                "Coin Wallet",
+                "Coin wallet actions will be added later."
+            );
+
+        });
+
+
+    /* =====================================================
+       INBOX
+    ===================================================== */
+
+    document
+        .getElementById("inboxButton")
+        .addEventListener("click", () => {
+
+            openModal(
+                "Inbox",
+                "You currently have no new messages."
+            );
+
+        });
+
+
+    /* =====================================================
+       SKIN
+    ===================================================== */
+
+    document
+        .getElementById("skinButton")
+        .addEventListener("click", () => {
+
+            openModal(
+                "Skin",
+                "Your current car skin is selected."
+            );
+
+        });
+
+
+    /* =====================================================
+       CAR PROFILE
+    ===================================================== */
+
+    document
+        .getElementById("carProfileButton")
+        .addEventListener("click", () => {
+
+            openModal(
+                "Car Profile",
+                "Your car profile will be available here."
+            );
+
+        });
+
+
+    /* =====================================================
+       GRAND PRIZE
+    ===================================================== */
+
+    document
+        .getElementById("grandPrizeButton")
+        .addEventListener("click", () => {
+
+            openModal(
+                "Grand Prize",
+                "Grand Prize system will be added here."
+            );
+
+        });
+
+
+    /* =====================================================
+       MISSION
+    ===================================================== */
+
+    document
+        .getElementById("missionButton")
+        .addEventListener("click", () => {
+
+            openModal(
+                "Mission",
+                "Complete races to increase your level."
+            );
+
+        });
+
+
+    /* =====================================================
+       INVITE
+    ===================================================== */
+
+    document
+        .getElementById("inviteButton")
+        .addEventListener("click", () => {
+
+            openModal(
+                "Invite",
+                "Invite friends and earn rewards."
+            );
+
+        });
+
+
+    /* =====================================================
+       PROFILE
+    ===================================================== */
+
+    document
+        .getElementById("profileButton")
+        .addEventListener("click", () => {
+
+            openModal(
+                "Profile",
+                "Your player profile will be available here."
+            );
+
+        });
+
+
+    /* =====================================================
+       INITIAL UI
+    ===================================================== */
+
+    updateHomeUI();
+
 });
-
-function spawnItems() {
-    obstacleTimer++;
-    if (obstacleTimer > 50) {
-        obstacleTimer = 0;
-        
-        // እንቅፋት በዘፈቀደ ከ 3ቱ መስመሮች በአንዱ ላይ ይወጣል
-        let randomLane = lanes[Math.floor(Math.random() * lanes.length)];
-        obstacles.push({ x: randomLane, y: -80, width: 40, height: 70, speed: 4 });
-
-        if (Math.random() > 0.4) {
-            let coinLane = lanes[Math.floor(Math.random() * lanes.length)];
-            coinList.push({ x: coinLane + 10, y: -40, radius: 12, speed: 4 });
-        }
-    }
-}
-
-function update() {
-    if (isGameOver) return;
-
-    spawnItems();
-
-    for (let i = obstacles.length - 1; i >= 0; i--) {
-        obstacles[i].y += obstacles[i].speed;
-
-        if (
-            car.x < obstacles[i].x + obstacles[i].width &&
-            car.x + car.width > obstacles[i].x &&
-            car.y < obstacles[i].y + obstacles[i].height &&
-            car.y + car.height > obstacles[i].y
-        ) {
-            isGameOver = true;
-            alert("ጌሙ አልቋል! (Game Over) ነጥብዎ: " + score);
-            location.reload();
-        }
-
-        if (obstacles[i].y > canvas.height) {
-            obstacles.splice(i, 1);
-            score += 10;
-            scoreDisplay.innerText = score;
-        }
-    }
-
-    for (let i = coinList.length - 1; i >= 0; i--) {
-        coinList[i].y += coinList[i].speed;
-
-        let distanceX = (car.x + car.width / 2) - coinList[i].x;
-        let distanceY = (car.y + car.height / 2) - coinList[i].y;
-        let distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
-
-        if (distance < car.width / 2 + coinList[i].radius) {
-            tokens += 0.50;
-            tokensDisplay.innerText = tokens.toFixed(2);
-            coinList.splice(i, 1);
-        } else if (coinList[i].y > canvas.height) {
-            coinList.splice(i, 1);
-        }
-    }
-}
-
-function draw() {
-    ctx.fillStyle = "#2c3e50";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    // የመንገድ መስመሮች (3  lanes እንዲታዩ 2 መስመሮች እናስገባለን)
-    ctx.strokeStyle = "#fff";
-    ctx.setLineDash([20, 20]);
-    ctx.lineWidth = 3;
-    
-    ctx.beginPath();
-    ctx.moveTo(120, 0); ctx.lineTo(120, canvas.height);
-    ctx.moveTo(240, 0); ctx.lineTo(240, canvas.height);
-    ctx.stroke();
-    ctx.setLineDash([]);
-
-    // የተጫዋች መኪና
-    ctx.fillStyle = car.color;
-    ctx.fillRect(car.x, car.y, car.width, car.height);
-    ctx.fillStyle = "#111";
-    ctx.fillRect(car.x + 5, car.y + 15, car.width - 10, 15);
-
-    // እንቅፋቶች
-    ctx.fillStyle = "#e74c3c";
-    for (let obs of obstacles) {
-        ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
-    }
-
-    // 🪙 ቶከኖች
-    ctx.fillStyle = "#f1c40f";
-    for (let coin of coinList) {
-        ctx.beginPath();
-        ctx.arc(coin.x, coin.y, coin.radius, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.strokeStyle = "#d4ac0d";
-        ctx.stroke();
-    }
-}
-
-function loop() {
-    update();
-    draw();
-    if (!isGameOver) {
-        requestAnimationFrame(loop);
-    }
-}
-
-loop();

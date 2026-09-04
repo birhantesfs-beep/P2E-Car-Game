@@ -1,50 +1,1149 @@
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: sans-serif;
-}
+/* =================================  
+   RESET  
+================================= */  
 
-body {
-    background-color: #121212;
-    color: #ffffff;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    overflow: hidden;
-}
+* {  
+  margin: 0;  
+  padding: 0;  
+  box-sizing: border-box;  
+}  
 
-.game-container {
-    width: 100%;
-    max-width: 400px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background: #1e1e1e;
-    padding: 15px;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-}
+html,  
+body {  
+  width: 100%;  
+  height: 100%;  
+  overflow: hidden;  
+}  
 
-.game-header {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    font-size: 18px;
-    font-weight: bold;
-    margin-bottom: 15px;
-    color: #ffd700;
-}
+body {  
+  font-family: Arial, Helvetica, sans-serif;  
+  background: #000;  
+}  
 
-.canvas-box {
-    border: 2px solid #00ffcc;
-    border-radius: 8px;
-    overflow: hidden;
-    background: #2c3e50;
-}
+/* =================================  
+   APP  
+================================= */  
 
-canvas {
-    display: block;
-    background: #333;
+#app {  
+  width: 100%;  
+  height: 100%;  
+  position: relative;  
+  overflow: hidden;  
+}  
+
+/* =================================  
+   COMMON SCREEN  
+================================= */  
+
+.screen {  
+  position: absolute;  
+  inset: 0;  
+  width: 100%;  
+  height: 100%;  
+  overflow: hidden;  
+}  
+
+.hidden {  
+  display: none !important;  
+}  
+
+/* =================================  
+   LOADING SCREEN  
+================================= */  
+
+.loading-screen {  
+  background-image: url("assets/splash.jpg");  
+  background-size: cover;  
+  background-position: center center;  
+  background-repeat: no-repeat;  
+  background-color: #061d49;  
+}  
+
+.loading-area {  
+  position: absolute;  
+  left: 50%;  
+  bottom: 6%;  
+  transform: translateX(-50%);  
+  width: min(72%, 470px);  
+  display: flex;  
+  flex-direction: column;  
+  align-items: center;  
+  justify-content: center;  
+  z-index: 5;  
+}  
+
+.loading-text {  
+  color: white;  
+  font-size: clamp(20px, 4vw, 32px);  
+  font-weight: 700;  
+  letter-spacing: 6px;  
+  margin-bottom: 12px;  
+  text-align: center;  
+  text-shadow: 0 2px 5px #000, 0 0 10px #000;  
+}  
+
+.loading-bar {  
+  width: 100%;  
+  height: 17px;  
+  border: 2px solid white;  
+  border-radius: 20px;  
+  background: rgba(0, 0, 0, 0.65);  
+  overflow: hidden;  
+  box-shadow: 0 0 8px rgba(255, 255, 255, .8), 0 0 18px rgba(255, 0, 0, .7);  
+}  
+
+#loadingProgress {  
+  width: 0%;  
+  height: 100%;  
+  border-radius: 20px;  
+  background: linear-gradient(90deg, #ff0015, #ff3b30);  
+  transition: width .15s linear;  
+}  
+
+.loading-percent {  
+  margin-top: 8px;  
+  color: white;  
+  font-size: 14px;  
+  font-weight: 700;  
+  text-shadow: 0 2px 4px #000;  
+}  
+
+/* =================================  
+   AUTH CHOICE  
+================================= */  
+
+.auth-choice {  
+  background-image: url("assets/splash.jpg");  
+  background-size: cover;  
+  background-position: center center;  
+  background-repeat: no-repeat;  
+  background-color: #061d49;  
+}  
+
+.auth-buttons {  
+  position: absolute;  
+  left: 50%;  
+  bottom: 6%;  
+  transform: translateX(-50%);  
+  width: min(82%, 500px);  
+  display: flex;  
+  flex-direction: column;  
+  align-items: center;  
+  gap: 13px;  
+  z-index: 10;  
+}  
+
+.main-auth-btn {  
+  width: 100%;  
+  height: 64px;  
+  border-radius: 18px;  
+  border: 2px solid rgba(255, 255, 255, .9);  
+  color: white;  
+  font-size: clamp(20px, 5vw, 29px);  
+  font-weight: 800;  
+  letter-spacing: 2px;  
+  display: flex;  
+  align-items: center;  
+  justify-content: center;  
+  gap: 18px;  
+  cursor: pointer;  
+  box-shadow: 0 5px 12px rgba(0, 0, 0, .5);  
+  transition: transform .15s ease;  
+}  
+
+.main-auth-btn:active {  
+  transform: scale(.97);  
+}  
+
+.login-btn {  
+  background: linear-gradient(90deg, #c80000, #ff2020, #c80000);  
+  box-shadow: 0 0 12px #ff2020, 0 5px 15px rgba(0, 0, 0, .5);  
+}  
+
+.signup-btn {  
+  background: linear-gradient(90deg, #0044cc, #087cff, #0044cc);  
+  box-shadow: 0 0 12px #087cff, 0 5px 15px rgba(0, 0, 0, .5);  
+}  
+
+.button-icon {  
+  font-size: 27px;  
+}  
+
+.guest-btn {  
+  margin-top: 3px;  
+  border: none;  
+  background: transparent;  
+  color: white;  
+  font-size: clamp(15px, 4vw, 21px);  
+  font-weight: 600;  
+  text-shadow: 0 2px 5px #000;  
+  cursor: pointer;  
+  letter-spacing: .5px;  
+}  
+
+.guest-btn span {  
+  font-size: 28px;  
+  margin-left: 5px;  
+}  
+
+/* =================================  
+   FORM SCREENS  
+================================= */  
+
+.form-screen {  
+  background-image: url("assets/splash.jpg");  
+  background-size: cover;  
+  background-position: center center;  
+  background-repeat: no-repeat;  
+  overflow-y: auto;  
+  padding: 25px 15px;  
+}  
+
+.form-box {  
+  width: min(92%, 540px);  
+  margin: 40px auto 30px;  
+  padding: 25px 22px 30px;  
+  border-radius: 28px;  
+  background: rgba(255, 255, 255, .88);  
+  border: 2px solid rgba(255, 255, 255, .95);  
+  box-shadow: 0 8px 30px rgba(0, 0, 0, .45);  
+  backdrop-filter: blur(8px);  
+  color: #13223b;  
+}  
+
+.form-box h2 {  
+  text-align: center;  
+  font-size: clamp(21px, 5vw, 29px);  
+  line-height: 1.25;  
+  margin-bottom: 7px;  
+}  
+
+.form-box > p {  
+  text-align: center;  
+  font-size: 17px;  
+  margin-bottom: 25px;  
+}  
+
+/* =================================  
+   INPUTS  
+================================= */  
+
+.name-row {  
+  display: grid;  
+  grid-template-columns: 1fr 1fr;  
+  gap: 0;  
+  margin-bottom: 14px;  
+}  
+
+.input-box {  
+  width: 100%;  
+  height: 62px;  
+  border: 2px solid #5e6878;  
+  border-radius: 13px;  
+  background: rgba(255, 255, 255, .78);  
+  display: flex;  
+  align-items: center;  
+  padding: 0 16px;  
+  margin-bottom: 14px;  
+}  
+
+.name-row .input-box {  
+  margin-bottom: 0;  
+  border-radius: 13px 0 0 13px;  
+}  
+
+.name-row .input-box + .input-box {  
+  border-left: 0;  
+  border-radius: 0 13px 13px 0;  
+}  
+
+.input-box span {  
+  font-size: 21px;  
+  margin-right: 12px;  
+}  
+
+.input-box input {  
+  width: 100%;  
+  height: 100%;  
+  border: none;  
+  outline: none;  
+  background: transparent;  
+  font-size: 18px;  
+  color: #16243a;  
+}  
+
+.input-box input::placeholder {  
+  color: #26354a;  
+  opacity: 1;  
+}  
+
+/* =================================  
+   SUBMIT  
+================================= */  
+
+.form-submit {  
+  width: 100%;  
+  height: 62px;  
+  border-radius: 32px;  
+  border: 2px solid white;  
+  color: white;  
+  font-size: 23px;  
+  font-weight: 700;  
+  letter-spacing: 2px;  
+  cursor: pointer;  
+  background: linear-gradient(90deg, #008cff, #112e52, #ff1b35);  
+  box-shadow: 0 0 12px #009dff, 0 0 20px rgba(255, 0, 30, .55);  
+}  
+
+.form-submit:active {  
+  transform: scale(.98);  
+}  
+
+/* =================================  
+   SWITCH FORM  
+================================= */  
+
+.switch-form {  
+  display: block;  
+  width: 100%;  
+  margin-top: 25px;  
+  border: none;  
+  background: transparent;  
+  color: #152d52;  
+  font-size: 18px;  
+  cursor: pointer;  
+}  
+
+.switch-form b {  
+  text-decoration: underline;  
+}  
+
+/* =================================  
+   LOGIN OPTIONS  
+================================= */  
+
+.login-options {  
+  display: flex;  
+  justify-content: space-between;  
+  align-items: center;  
+  margin: 5px 3px 22px;  
+  gap: 10px;  
+}  
+
+.login-options label {  
+  display: flex;  
+  align-items: center;  
+  gap: 9px;  
+  font-size: 16px;  
+}  
+
+.login-options input {  
+  width: 20px;  
+  height: 20px;  
+}  
+
+#forgotPassword {  
+  border: none;  
+  background: transparent;  
+  color: #182d4c;  
+  text-decoration: underline;  
+  font-size: 16px;  
+  cursor: pointer;  
+}  
+
+/* =================================  
+   VERIFICATION  
+================================= */  
+
+.verification-screen {  
+  background-image: url("assets/splash.jpg");  
+  background-size: cover;  
+  background-position: center center;  
+  background-repeat: no-repeat;  
+  overflow-y: auto;  
+  display: flex;  
+  justify-content: center;  
+  align-items: center;  
+  padding: 20px;  
+}  
+
+.verification-box {  
+  width: min(92%, 500px);  
+  padding: 35px 25px;  
+  border-radius: 28px;  
+  background: rgba(255, 255, 255, .90);  
+  border: 2px solid rgba(255, 255, 255, .95);  
+  box-shadow: 0 8px 30px rgba(0, 0, 0, .55);  
+  backdrop-filter: blur(8px);  
+  text-align: center;  
+  color: #14243d;  
+}  
+
+.verification-icon {  
+  width: 75px;  
+  height: 75px;  
+  margin: 0 auto 15px;  
+  border-radius: 50%;  
+  display: flex;  
+  align-items: center;  
+  justify-content: center;  
+  font-size: 38px;  
+  background: linear-gradient(135deg, #087cff, #ff1c35);  
+  box-shadow: 0 0 18px rgba(0, 140, 255, .65);  
+}  
+
+.verification-box h2 {  
+  font-size: 28px;  
+  margin-bottom: 10px;  
+}  
+
+.verification-box > p {  
+  font-size: 17px;  
+  margin-bottom: 8px;  
+  line-height: 1.4;  
+}  
+
+.verification-email {  
+  font-size: 15px !important;  
+  color: #42536b;  
+  margin-bottom: 18px !important;  
+  word-break: break-word;  
+}  
+
+.verification-email strong {  
+  color: #152d52;  
+}  
+
+/* =================================  
+   DEMO CODE  
+================================= */  
+
+.demo-code-box {  
+  margin: 15px auto 20px;  
+  padding: 12px 15px;  
+  width: min(100%, 300px);  
+  border-radius: 14px;  
+  background: rgba(8, 124, 255, .10);  
+  border: 2px dashed #087cff;  
+  display: flex;  
+  flex-direction: column;  
+  gap: 5px;  
+}  
+
+.demo-code-box span {  
+  font-size: 13px;  
+  color: #42536b;  
+}  
+
+.demo-code-box strong {  
+  font-size: 28px;  
+  letter-spacing: 6px;  
+  color: #102b4d;  
+}  
+
+/* =================================  
+   CODE INPUTS  
+================================= */  
+
+.code-inputs {  
+  display: flex;  
+  justify-content: center;  
+  align-items: center;  
+  gap: 9px;  
+  margin: 25px 0;  
+}  
+
+.code-inputs input {  
+  width: 48px;  
+  height: 58px;  
+  border: 2px solid #5a687b;  
+  border-radius: 11px;  
+  background: rgba(255, 255, 255, .95);  
+  outline: none;  
+  text-align: center;  
+  font-size: 27px;  
+  font-weight: 700;  
+  color: #172c4a;  
+  transition: .2s;  
+}  
+
+.code-inputs input:focus {  
+  border-color: #078cff;  
+  box-shadow: 0 0 10px rgba(0, 140, 255, .55);  
+}  
+
+/* =================================  
+   VERIFY  
+================================= */  
+
+.verify-btn {  
+  width: 100%;  
+  height: 60px;  
+  border: 2px solid white;  
+  border-radius: 32px;  
+  background: linear-gradient(90deg, #008cff, #14335a, #ff1733);  
+  color: white;  
+  font-size: 22px;  
+  font-weight: 700;  
+  letter-spacing: 2px;  
+  box-shadow: 0 0 12px #009dff, 0 0 20px rgba(255, 0, 30, .5);  
+  cursor: pointer;  
+}  
+
+.verify-btn:active {  
+  transform: scale(.98);  
+}  
+
+/* =================================  
+   RESEND  
+================================= */  
+
+.resend-btn {  
+  display: block;  
+  margin: 20px auto 5px;  
+  border: none;  
+  background: transparent;  
+  color: #0b65c7;  
+  font-size: 17px;  
+  font-weight: 600;  
+  text-decoration: underline;  
+  cursor: pointer;  
+}  
+
+/* =================================  
+   BACK  
+================================= */  
+
+.back-btn {  
+  margin-top: 12px;  
+  border: none;  
+  background: transparent;  
+  color: #263b58;  
+  font-size: 16px;  
+  cursor: pointer;  
+}  
+
+/* =================================  
+   VERIFICATION MESSAGE  
+================================= */  
+
+.verification-message {  
+  margin-top: 15px;  
+  min-height: 22px;  
+  font-size: 15px;  
+  font-weight: 600;  
+}  
+
+/* =================================  
+   HOME SCREEN  
+================================= */  
+
+.home-screen {  
+  position: fixed;  
+  inset: 0;  
+  width: 100%;  
+  height: 100%;  
+  overflow: hidden;  
+  background: linear-gradient(rgba(0, 70, 150, .08), rgba(0, 0, 0, .10)), url("assets/home-car.jpg") center / cover no-repeat;  
+  color: white;  
+  font-family: Arial, Helvetica, sans-serif;  
+}  
+
+/* =================================  
+   TOP  
+================================= */  
+
+.home-top {  
+  position: absolute;  
+  top: 20px;  
+  left: 10px;  
+  right: 10px;  
+  height: 125px;  
+  z-index: 20;  
+}  
+
+/* =================================  
+   CAR PROFILE  
+================================= */  
+
+.car-profile {  
+  position: absolute;  
+  left: 0;  
+  top: 0;  
+  width: 115px;  
+  height: 115px;  
+  padding: 4px;  
+  border: 3px solid white;  
+  border-radius: 16px;  
+  background: #147bd4;  
+  box-shadow: 0 5px 15px rgba(0, 0, 0, .45);  
+  overflow: hidden;  
+  cursor: pointer;  
+}  
+
+.car-profile img {  
+  width: 100%;  
+  height: 100%;  
+  object-fit: cover;  
+  border-radius: 11px;  
+}  
+
+/* =================================  
+   WALLETS  
+================================= */  
+
+.wallet {  
+  position: absolute;  
+  top: 7px;  
+  height: 57px;  
+  border: none;  
+  border-radius: 13px;  
+  background: linear-gradient(180deg, #0d4787, #062858);  
+  color: white;  
+  display: flex;  
+  align-items: center;  
+  box-shadow: 0 5px 12px rgba(0, 0, 0, .40);  
+  cursor: pointer;  
+  transition: transform .15s ease, filter .15s ease;  
+}  
+
+.wallet:active {  
+  transform: scale(.96);  
+  filter: brightness(1.15);  
+}  
+
+.cash-wallet {  
+  left: 126px;  
+  width: 205px;  
+}  
+
+.coin-wallet {  
+  left: 341px;  
+  width: 205px;  
+}  
+
+.wallet-icon {  
+  margin-left: 10px;  
+  font-size: 28px;  
+}  
+
+.wallet-value {  
+  margin-left: 9px;  
+  font-size: 22px;  
+  font-weight: 900;  
+}  
+
+.wallet-action {  
+  margin-left: auto;  
+  margin-right: 9px;  
+  font-size: 25px;  
+}  
+
+/* =================================  
+   ENERGY  
+================================= */  
+
+.energy-box {  
+  position: absolute;  
+  left: 126px;  
+  top: 72px;  
+  min-width: 125px;  
+  height: 43px;  
+  padding: 0 13px;  
+  border-radius: 10px;  
+  background: linear-gradient(180deg, #0b4788, #062858);  
+  display: flex;  
+  align-items: center;  
+  gap: 8px;  
+  font-size: 20px;  
+  font-weight: 900;  
+  box-shadow: 0 5px 12px rgba(0, 0, 0, .35);  
+}  
+
+.energy-icon {  
+  font-size: 22px;  
+}  
+
+/* =================================  
+   INBOX  
+================================= */  
+
+.inbox-button {  
+  position: absolute;  
+  right: 0;  
+  top: 72px;  
+  width: 58px;  
+  height: 58px;  
+  border-radius: 12px;  
+  border: 2px solid #0a5595;  
+  background: #1389df;  
+  color: white;  
+  font-size: 30px;  
+  box-shadow: 0 5px 12px rgba(0, 0, 0, .35);  
+  cursor: pointer;  
+  transition: transform .15s ease;  
+}  
+
+.inbox-button:active {  
+  transform: scale(.94);  
+}  
+
+.inbox-badge {  
+  position: absolute;  
+  right: -3px;  
+  top: -6px;  
+  width: 18px;  
+  height: 18px;  
+  border-radius: 50%;  
+  background: #ff1727;  
+  color: white;  
+  font-size: 11px;  
+  font-weight: 900;  
+  display: flex;  
+  align-items: center;  
+  justify-content: center;  
+}  
+
+/* =================================  
+   LEVEL  
+================================= */  
+
+.level-area {  
+  position: absolute;  
+  top: 230px;  
+  left: 0;  
+  right: 0;  
+  text-align: center;  
+  z-index: 10;  
+}  
+
+.level-area h1 {  
+  margin: 0;  
+  font-size: 48px;  
+  font-weight: 900;  
+  color: white;  
+  text-shadow: 3px 3px 0 #000, -1px -1px 0 #000, 0 4px 7px rgba(0, 0, 0, .45);  
+}  
+
+/* =================================  
+   SKIN  
+================================= */  
+
+.skin-button {  
+  position: absolute;  
+  right: 20px;  
+  top: 365px;  
+  width: 120px;  
+  height: 130px;  
+  padding: 4px;  
+  border-radius: 14px;  
+  border: 3px solid #198edf;  
+  background: #f7f7f7;  
+  color: #111;  
+  box-shadow: 0 6px 14px rgba(0, 0, 0, .4);  
+  cursor: pointer;  
+  z-index: 15;  
+  font-size: 19px;  
+  font-weight: 900;  
+  transition: transform .15s ease;  
+}  
+
+.skin-button:active {  
+  transform: scale(.95);  
+}  
+
+.skin-image {  
+  width: 100%;  
+  height: 87px;  
+  display: flex;  
+  align-items: center;  
+  justify-content: center;  
+  overflow: hidden;  
+  border-radius: 9px;  
+}  
+
+.skin-image img {  
+  width: 100%;  
+  height: 100%;  
+  object-fit: cover;  
+}  
+
+/* =================================  
+   GAME AREA  
+================================= */  
+
+.game-area {  
+  position: absolute;  
+  left: 0;  
+  right: 0;  
+  top: 46%;  
+  height: 36%;  
+  pointer-events: none;  
+  z-index: 5;  
+}  
+
+/* =================================  
+   GAME CAR  
+================================= */  
+
+.game-car {  
+  position: absolute;  
+  left: 50%;  
+  bottom: 0;  
+  width: 310px;  
+  transform: translateX(-50%);  
+  transition: transform .5s ease;  
+  filter: drop-shadow(0 10px 8px rgba(0, 0, 0, .55));  
+}  
+
+.game-car img {  
+  display: block;  
+  width: 100%;  
+  height: auto;  
+  object-fit: cover;  
+  border-radius: 20px;  
+}  
+
+.game-car.running {  
+  animation: carDrive 1s infinite alternate;  
+}  
+
+@keyframes carDrive {  
+  from {  
+    transform: translateX(-50%) translateY(0);  
+  }  
+  to {  
+    transform: translateX(-50%) translateY(-22px);  
+  }  
+}  
+
+/* =================================  
+   GAME MESSAGE  
+================================= */  
+
+.game-message {  
+  position: absolute;  
+  left: 50%;  
+  top: 50%;  
+  transform: translate(-50%, -50%);  
+  font-size: 32px;  
+  font-weight: 900;  
+  color: white;  
+  text-shadow: 3px 3px 0 #000;  
+  z-index: 30;  
+  white-space: nowrap;  
+}  
+
+/* =================================  
+   START GAME  
+================================= */  
+
+.start-game-button {  
+  position: absolute;  
+  left: 50%;  
+  bottom: 177px;  
+  transform: translateX(-50%);  
+  width: min(410px, 76%);  
+  height: 92px;  
+  border: none;  
+  border-radius: 48px;  
+  background: linear-gradient(180deg, #fff04b 0%, #ffc400 55%, #ff9d00 100%);  
+  color: #702700;  
+  box-shadow: 0 8px 0 #d77a00, 0 12px 24px rgba(0, 0, 0, .45);  
+  cursor: pointer;  
+  z-index: 25;  
+  transition: transform .12s ease, box-shadow .12s ease;  
+}  
+
+.start-game-button:active {  
+  transform: translateX(-50%) translateY(5px);  
+  box-shadow: 0 3px 0 #d77a00, 0 7px 12px rgba(0, 0, 0, .35);  
+}  
+
+.start-game-button:disabled {  
+  opacity: .65;  
+  cursor: not-allowed;  
+}  
+
+.start-title {  
+  display: block;  
+  font-size: 30px;  
+  line-height: 34px;  
+  font-weight: 900;  
+}  
+
+.start-energy {  
+  display: block;  
+  margin-top: 4px;  
+  font-size: 19px;  
+  font-weight: 900;  
+}  
+
+/* =================================  
+   BOTTOM ACTIONS  
+================================= */  
+
+.home-actions {  
+  position: absolute;  
+  left: 8px;  
+  right: 8px;  
+  bottom: 10px;  
+  height: 88px;  
+  display: grid;  
+  grid-template-columns: repeat(4, 1fr);  
+  gap: 7px;  
+  z-index: 20;  
+}  
+
+.action-card {  
+  height: 88px;  
+  border: none;  
+  border-radius: 13px;  
+  background: linear-gradient(180deg, #ffffff, #e8edf2);  
+  color: #151515;  
+  box-shadow: 0 5px 12px rgba(0, 0, 0, .40);  
+  cursor: pointer;  
+  font-weight: 900;  
+  transition: transform .12s ease;  
+}  
+
+.action-card:active {  
+  transform: translateY(3px);  
+}  
+
+.action-icon {  
+  font-size: 34px;  
+  line-height: 38px;  
+}  
+
+.action-title {  
+  margin-top: 4px;  
+  font-size: 14px;  
+  font-weight: 900;  
+}  
+
+/* =================================  
+   MODAL  
+================================= */  
+
+.home-modal {  
+  position: absolute;  
+  inset: 0;  
+  background: rgba(0, 0, 0, .60);  
+  z-index: 100;  
+  display: flex;  
+  align-items: center;  
+  justify-content: center;  
+  padding: 20px;  
+}  
+
+.modal-box {  
+  position: relative;  
+  width: 90%;  
+  max-width: 390px;  
+  padding: 30px 20px;  
+  border-radius: 20px;  
+  background: white;  
+  color: #14233d;  
+  text-align: center;  
+  box-shadow: 0 10px 35px rgba(0, 0, 0, .55);  
+}  
+
+.close-modal {  
+  position: absolute;  
+  right: 12px;  
+  top: 7px;  
+  border: none;  
+  background: transparent;  
+  font-size: 32px;  
+  cursor: pointer;  
+}  
+
+/* =================================  
+   MOBILE  
+================================= */  
+
+@media (max-width: 500px) {  
+  .home-top {  
+    top: 12px;  
+    left: 8px;  
+    right: 8px;  
+  }  
+  .car-profile {  
+    width: 108px;  
+    height: 108px;  
+  }  
+  .cash-wallet {  
+    left: 116px;  
+    width: calc(50% - 17px);  
+  }  
+  .coin-wallet {  
+    left: calc(50% + 8px);  
+    width: calc(50% - 17px);  
+  }  
+  .wallet-icon {  
+    font-size: 23px;  
+  }  
+  .wallet-value {  
+    font-size: 18px;  
+    margin-left: 6px;  
+  }  
+  .wallet-action {  
+    font-size: 21px;  
+    margin-right: 6px;  
+  }  
+  .energy-box {  
+    left: 116px;  
+    top: 69px;  
+    height: 41px;  
+    min-width: 105px;  
+    font-size: 18px;  
+  }  
+  .inbox-button {  
+    top: 69px;  
+    width: 56px;  
+    height: 56px;  
+  }  
+  .level-area {  
+    top: 225px;  
+  }  
+  .level-area h1 {  
+    font-size: 42px;  
+  }  
+  .skin-button {  
+    right: 15px;  
+    top: 365px;  
+    width: 112px;  
+    height: 125px;  
+  }  
+  .game-area {  
+    top: 49%;  
+    height: 31%;  
+  }  
+  .game-car {  
+    width: 285px;  
+    max-width: 72vw;  
+  }  
+  .start-game-button {  
+    bottom: 108px;  
+    width: 74%;  
+    height: 86px;  
+  }  
+  .start-title {  
+    font-size: 27px;  
+  }  
+  .start-energy {  
+    font-size: 18px;  
+  }  
+  .home-actions {  
+    bottom: 8px;  
+    left: 7px;  
+    right: 7px;  
+    height: 82px;  
+    gap: 6px;  
+  }  
+  .action-card {  
+    height: 82px;  
+  }  
+  .action-icon {  
+    font-size: 30px;  
+    line-height: 34px;  
+  }  
+  .action-title {  
+    font-size: 12px;  
+  }  
+}  
+
+/* =================================  
+   SMALL PHONES  
+================================= */  
+
+@media (max-width: 380px) {  
+  .loading-area {  
+    width: 82%;  
+  }  
+  .main-auth-btn {  
+    height: 57px;  
+    font-size: 21px;  
+  }  
+  .form-box {  
+    padding: 20px 15px 25px;  
+  }  
+  .verification-box {  
+    padding: 25px 15px;  
+  }  
+  .code-inputs {  
+    gap: 5px;  
+  }  
+  .code-inputs input {  
+    width: 42px;  
+    height: 52px;  
+    font-size: 24px;  
+  }  
+  .car-profile {  
+    width: 96px;  
+    height: 96px;  
+  }  
+  .cash-wallet {  
+    left: 104px;  
+  }  
+  .coin-wallet {  
+    left: calc(50% + 5px);  
+  }  
+  .wallet-value {  
+    font-size: 16px;  
+  }  
+  .energy-box {  
+    left: 104px;  
+  }  
+  .level-area {  
+    top: 205px;  
+  }  
+  .skin-button {  
+    top: 340px;  
+    width: 100px;  
+    height: 112px;  
+  }  
+  .game-car {  
+    width: 245px;  
+  }  
+  .start-game-button {  
+    bottom: 105px;  
+    height: 78px;  
+  }  
+  .start-title {  
+    font-size: 23px;  
+  }  
+  .action-card {  
+    height: 75px;  
+  }  
+  .action-icon {  
+    font-size: 27px;  
+  }  
+  .action-title {  
+    font-size: 11px;  
+  }  
+}  
+
+/* =================================  
+   SHORT SCREENS  
+================================= */  
+
+@media (max-height: 700px) {  
+  .loading-area {  
+    bottom: 4%;  
+  }  
+  .auth-buttons {  
+    bottom: 4%;  
+    gap: 8px;  
+  }  
+  .main-auth-btn {  
+    height: 55px;  
+  }  
+  .guest-btn {  
+    font-size: 14px;  
+  }  
+  .form-box {  
+    margin-top: 15px;  
+  }  
 }
